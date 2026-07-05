@@ -5,6 +5,26 @@ import { notFound } from 'next/navigation';
 import QuoteForm from '../../components/quote/QuoteForm';
 import Footer from '../../components/footer/Footer';
 
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const supabase = await createClient();
+
+  const { data: category } = await supabase
+    .from('categories')
+    .select('*')
+    .eq('slug', slug)
+    .single();
+
+  if (!category) {
+    return { title: 'Category Not Found' };
+  }
+
+  return {
+    title: `${category.name} — Marine Lighting & Supply`,
+    description: `Browse our range of ${category.name.toLowerCase()} at Ernest Industry Maritime Services. Quality marine-grade products supplied to vessels across Douala, Kribi and Limbe ports. Request a quote today.`,
+  };
+}
+
 export default async function CategoryPage({ params }) {
   const { slug } = await params;
   const supabase = await createClient();
